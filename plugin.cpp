@@ -138,7 +138,7 @@ public:
 		// label, value, min, max, type_of_control, special_value
 		// use the UI builder in the software to generate this
 
-		AddParameter( PARAM_LEVEL ,"Level 0|Level 1|Level 2|Level 3|Level 4|Level 5", 1, 0, 5, TYPE_ONEOFMANY, 0);
+		AddParameter( PARAM_LEVEL ,"Level 0|Level 1|Level 2|Level 3|Level 4|Level 5|Level 6|Level 7|Level 8", 0, 0, 8, TYPE_ONEOFMANY, 0);
 
 		AddParameter( PARAM_TYPE ,"Gaussian|LaPlacian", 0, 0, 1, TYPE_ONEOFMANY, 0);
 
@@ -168,7 +168,7 @@ public:
 		float colorDepth = 255.0;
 
 		//We don't want an image too small for our pyramids
-		if ((nWidth < 8) || (nHeight < 8))
+		if ((nWidth < 128) || (nHeight < 128))
 		{
 			sprintf(sBuffer6,"ERROR\nImage too Small\nTry a larger image!");MessageBox(NULL,sBuffer6,"stop", MB_OK);
 			return;
@@ -208,6 +208,21 @@ public:
 		int pyramidWidthLevel5 = pyramidWidthLevel4 / 2;
 		int pyramidHeightLevel5 = pyramidHeightLevel4 / 2;
 
+		/////////////////////////// LEVEL 6
+		//level 5 is 1/2 the size of level 5
+		int pyramidWidthLevel6 = pyramidWidthLevel5 / 2;
+		int pyramidHeightLevel6 = pyramidHeightLevel5 / 2;
+
+		/////////////////////////// LEVEL 7
+		//level 5 is 1/2 the size of level 6
+		int pyramidWidthLevel7 = pyramidWidthLevel6 / 2;
+		int pyramidHeightLevel7 = pyramidHeightLevel6 / 2;
+
+		/////////////////////////// LEVEL 8
+		//level 5 is 1/2 the size of level 7
+		int pyramidWidthLevel8 = pyramidWidthLevel7 / 2;
+		int pyramidHeightLevel8 = pyramidHeightLevel7 / 2;
+
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//            HERE we are defining the Pyramid levels that we want to use                                  //
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -217,7 +232,7 @@ public:
 		int verticalLevels = howManyLevelsCanBeProcessed(pyramidHeightLevel0,1);
 		int numberOfPyramidLevels = min(horizontalLevels, verticalLevels);
 		//adjust to 5 levels
-		if (numberOfPyramidLevels < 5) 
+		if (numberOfPyramidLevels < 8) 
 		{
 			sprintf(sBuffer6,"ERROR\nImage too Small\nTry a larger image!  Cannot create enough pyramid levels");MessageBox(NULL,sBuffer6,"stop", MB_OK);
 			return;
@@ -271,8 +286,6 @@ public:
 		float* pyramidLevel1Array = new float[pyramidWidthLevel1 * pyramidHeightLevel1 * 4];
 		initalizeArrayNeutralGrey(pyramidLevel1Array, pyramidWidthLevel1, pyramidHeightLevel1);
 		/////////////////////////// LEVEL 1
-
-
 		
 		/////////////////////////// LEVEL 2
 		float* pyramidLevel2Array = new float[pyramidWidthLevel2 * pyramidHeightLevel2 * 4];
@@ -294,8 +307,20 @@ public:
 		initalizeArrayNeutralGrey(pyramidLevel5Array, pyramidWidthLevel5, pyramidHeightLevel5);
 		/////////////////////////// LEVEL 5
 
-
+		/////////////////////////// LEVEL 6
+		float* pyramidLevel6Array = new float[pyramidWidthLevel6 * pyramidHeightLevel6 * 4];
+		initalizeArrayNeutralGrey(pyramidLevel6Array, pyramidWidthLevel6, pyramidHeightLevel6);
+		/////////////////////////// LEVEL 6
 		
+		/////////////////////////// LEVEL 7
+		float* pyramidLevel7Array = new float[pyramidWidthLevel7 * pyramidHeightLevel7 * 4];
+		initalizeArrayNeutralGrey(pyramidLevel7Array, pyramidWidthLevel7, pyramidHeightLevel7);
+		/////////////////////////// LEVEL 7
+
+		/////////////////////////// LEVEL 8
+		float* pyramidLevel8Array = new float[pyramidWidthLevel8 * pyramidHeightLevel8 * 4];
+		initalizeArrayNeutralGrey(pyramidLevel8Array, pyramidWidthLevel8, pyramidHeightLevel8);
+		/////////////////////////// LEVEL 8
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//            HERE we are defining the Pyramid level arrays that we want to use, this is a MEMORY HOG!!!!        //
@@ -307,8 +332,7 @@ public:
 
 		if (level == 0)
 		{
-			//gaussianReducepyramid(pyramidLevel0Array, pyramidWidthLevel0, pyramidHeightLevel0, pyramidLevel1Array, pyramidWidthLevel1, pyramidHeightLevel1);
-			//copyImageToOriginalSize(pyramidLevel0Array, pyramidWidthLevel0, pyramidHeightLevel0, originalImage, nWidth, nHeight);
+			//LEVEL 0 is the original image
 		}
 
 		
@@ -317,6 +341,7 @@ public:
 		{
 			initalizeArrayNeutralGrey(originalImage, nWidth, nHeight);
 			gaussianReducepyramid(pyramidLevel0Array, pyramidWidthLevel0, pyramidHeightLevel0, pyramidLevel1Array, pyramidWidthLevel1, pyramidHeightLevel1);
+
 			copyImageToOriginalSize(pyramidLevel1Array, pyramidWidthLevel1, pyramidHeightLevel1, originalImage, nWidth, nHeight);
 		}
 
@@ -325,6 +350,7 @@ public:
 			initalizeArrayNeutralGrey(originalImage, nWidth, nHeight);
 			gaussianReducepyramid(pyramidLevel0Array, pyramidWidthLevel0, pyramidHeightLevel0, pyramidLevel1Array, pyramidWidthLevel1, pyramidHeightLevel1);
 			gaussianReducepyramid(pyramidLevel1Array, pyramidWidthLevel1, pyramidHeightLevel1, pyramidLevel2Array, pyramidWidthLevel2, pyramidHeightLevel2);
+
 			copyImageToOriginalSize(pyramidLevel2Array, pyramidWidthLevel2, pyramidHeightLevel2, originalImage, nWidth, nHeight);
 		}
 
@@ -338,6 +364,70 @@ public:
 			copyImageToOriginalSize(pyramidLevel3Array, pyramidWidthLevel3, pyramidHeightLevel3, originalImage, nWidth, nHeight);
 		}
 
+		if (level == 4)
+		{
+			initalizeArrayNeutralGrey(originalImage, nWidth, nHeight);
+			gaussianReducepyramid(pyramidLevel0Array, pyramidWidthLevel0, pyramidHeightLevel0, pyramidLevel1Array, pyramidWidthLevel1, pyramidHeightLevel1);
+			gaussianReducepyramid(pyramidLevel1Array, pyramidWidthLevel1, pyramidHeightLevel1, pyramidLevel2Array, pyramidWidthLevel2, pyramidHeightLevel2);
+			gaussianReducepyramid(pyramidLevel2Array, pyramidWidthLevel2, pyramidHeightLevel2, pyramidLevel3Array, pyramidWidthLevel3, pyramidHeightLevel3);
+			gaussianReducepyramid(pyramidLevel3Array, pyramidWidthLevel3, pyramidHeightLevel3, pyramidLevel4Array, pyramidWidthLevel4, pyramidHeightLevel4);
+
+			copyImageToOriginalSize(pyramidLevel4Array, pyramidWidthLevel4, pyramidHeightLevel4, originalImage, nWidth, nHeight);
+		}
+
+		if (level == 5)
+		{
+			initalizeArrayNeutralGrey(originalImage, nWidth, nHeight);
+			gaussianReducepyramid(pyramidLevel0Array, pyramidWidthLevel0, pyramidHeightLevel0, pyramidLevel1Array, pyramidWidthLevel1, pyramidHeightLevel1);
+			gaussianReducepyramid(pyramidLevel1Array, pyramidWidthLevel1, pyramidHeightLevel1, pyramidLevel2Array, pyramidWidthLevel2, pyramidHeightLevel2);
+			gaussianReducepyramid(pyramidLevel2Array, pyramidWidthLevel2, pyramidHeightLevel2, pyramidLevel3Array, pyramidWidthLevel3, pyramidHeightLevel3);
+			gaussianReducepyramid(pyramidLevel3Array, pyramidWidthLevel3, pyramidHeightLevel3, pyramidLevel4Array, pyramidWidthLevel4, pyramidHeightLevel4);
+			gaussianReducepyramid(pyramidLevel4Array, pyramidWidthLevel4, pyramidHeightLevel4, pyramidLevel5Array, pyramidWidthLevel5, pyramidHeightLevel5);
+
+			copyImageToOriginalSize(pyramidLevel5Array, pyramidWidthLevel5, pyramidHeightLevel5, originalImage, nWidth, nHeight);
+		}
+
+		if (level == 6)
+		{
+			initalizeArrayNeutralGrey(originalImage, nWidth, nHeight);
+			gaussianReducepyramid(pyramidLevel0Array, pyramidWidthLevel0, pyramidHeightLevel0, pyramidLevel1Array, pyramidWidthLevel1, pyramidHeightLevel1);
+			gaussianReducepyramid(pyramidLevel1Array, pyramidWidthLevel1, pyramidHeightLevel1, pyramidLevel2Array, pyramidWidthLevel2, pyramidHeightLevel2);
+			gaussianReducepyramid(pyramidLevel2Array, pyramidWidthLevel2, pyramidHeightLevel2, pyramidLevel3Array, pyramidWidthLevel3, pyramidHeightLevel3);
+			gaussianReducepyramid(pyramidLevel3Array, pyramidWidthLevel3, pyramidHeightLevel3, pyramidLevel4Array, pyramidWidthLevel4, pyramidHeightLevel4);
+			gaussianReducepyramid(pyramidLevel4Array, pyramidWidthLevel4, pyramidHeightLevel4, pyramidLevel5Array, pyramidWidthLevel5, pyramidHeightLevel5);
+			gaussianReducepyramid(pyramidLevel5Array, pyramidWidthLevel5, pyramidHeightLevel5, pyramidLevel6Array, pyramidWidthLevel6, pyramidHeightLevel6);
+
+			copyImageToOriginalSize(pyramidLevel6Array, pyramidWidthLevel6, pyramidHeightLevel6, originalImage, nWidth, nHeight);
+		}
+
+		if (level == 7)
+		{
+			initalizeArrayNeutralGrey(originalImage, nWidth, nHeight);
+			gaussianReducepyramid(pyramidLevel0Array, pyramidWidthLevel0, pyramidHeightLevel0, pyramidLevel1Array, pyramidWidthLevel1, pyramidHeightLevel1);
+			gaussianReducepyramid(pyramidLevel1Array, pyramidWidthLevel1, pyramidHeightLevel1, pyramidLevel2Array, pyramidWidthLevel2, pyramidHeightLevel2);
+			gaussianReducepyramid(pyramidLevel2Array, pyramidWidthLevel2, pyramidHeightLevel2, pyramidLevel3Array, pyramidWidthLevel3, pyramidHeightLevel3);
+			gaussianReducepyramid(pyramidLevel3Array, pyramidWidthLevel3, pyramidHeightLevel3, pyramidLevel4Array, pyramidWidthLevel4, pyramidHeightLevel4);
+			gaussianReducepyramid(pyramidLevel4Array, pyramidWidthLevel4, pyramidHeightLevel4, pyramidLevel5Array, pyramidWidthLevel5, pyramidHeightLevel5);
+			gaussianReducepyramid(pyramidLevel5Array, pyramidWidthLevel5, pyramidHeightLevel5, pyramidLevel6Array, pyramidWidthLevel6, pyramidHeightLevel6);
+			gaussianReducepyramid(pyramidLevel6Array, pyramidWidthLevel6, pyramidHeightLevel6, pyramidLevel7Array, pyramidWidthLevel7, pyramidHeightLevel7);
+
+			copyImageToOriginalSize(pyramidLevel7Array, pyramidWidthLevel7, pyramidHeightLevel7, originalImage, nWidth, nHeight);
+		}
+
+		if (level == 8)
+		{
+			initalizeArrayNeutralGrey(originalImage, nWidth, nHeight);
+			gaussianReducepyramid(pyramidLevel0Array, pyramidWidthLevel0, pyramidHeightLevel0, pyramidLevel1Array, pyramidWidthLevel1, pyramidHeightLevel1);
+			gaussianReducepyramid(pyramidLevel1Array, pyramidWidthLevel1, pyramidHeightLevel1, pyramidLevel2Array, pyramidWidthLevel2, pyramidHeightLevel2);
+			gaussianReducepyramid(pyramidLevel2Array, pyramidWidthLevel2, pyramidHeightLevel2, pyramidLevel3Array, pyramidWidthLevel3, pyramidHeightLevel3);
+			gaussianReducepyramid(pyramidLevel3Array, pyramidWidthLevel3, pyramidHeightLevel3, pyramidLevel4Array, pyramidWidthLevel4, pyramidHeightLevel4);
+			gaussianReducepyramid(pyramidLevel4Array, pyramidWidthLevel4, pyramidHeightLevel4, pyramidLevel5Array, pyramidWidthLevel5, pyramidHeightLevel5);
+			gaussianReducepyramid(pyramidLevel5Array, pyramidWidthLevel5, pyramidHeightLevel5, pyramidLevel6Array, pyramidWidthLevel6, pyramidHeightLevel6);
+			gaussianReducepyramid(pyramidLevel6Array, pyramidWidthLevel6, pyramidHeightLevel6, pyramidLevel7Array, pyramidWidthLevel7, pyramidHeightLevel7);
+			gaussianReducepyramid(pyramidLevel7Array, pyramidWidthLevel7, pyramidHeightLevel7, pyramidLevel8Array, pyramidWidthLevel8, pyramidHeightLevel8);
+
+			copyImageToOriginalSize(pyramidLevel8Array, pyramidWidthLevel8, pyramidHeightLevel8, originalImage, nWidth, nHeight);
+		}
 
 		//test
 		for (int x = 0; x < nWidth; x++)
